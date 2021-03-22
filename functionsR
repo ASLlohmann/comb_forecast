@@ -1,0 +1,12 @@
+custom_hybrid=  function(y, models=list(ets,auto.arima)){
+estimated_models=lapply(models, function(f) f(y))
+f_prov=lapply(estimated_models, FUN=function(x){forecast(x,h=1)})
+for (i in 1:length(f_prov)){
+if (i ==1){data=data.frame(1,1)}
+data[i]=f_prov[[i]]$mean
+if (i==length(f_prov)) {data=data.frame(rowSums(data), data)
+colnames(data)=("hybridforecast")}
+data
+}
+}
+
