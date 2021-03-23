@@ -1,12 +1,13 @@
-custom_hybrid=  function(y, models=list(ets,auto.arima)){
+custom_hybrid=  function(y, models=list(ets,auto.arima), h=h){
 estimated_models=lapply(models, function(f) f(y))
-f_prov=lapply(estimated_models, FUN=function(x){forecast(x,h=1)})
+f_prov=lapply(estimated_models, FUN=function(x){forecast(x,h=h)})
 for (i in 1:length(f_prov)){
-if (i ==1){data=data.frame(1,1)}
+if (i ==1){data=data.frame(rep(NA,length(models)))}
 data[i]=f_prov[[i]]$mean
-if (i==length(f_prov)) {data=data.frame(rowSums(data), data)
-colnames(data)=("hybridforecast")}
-data
 }
+forecasts=list()
+forecasts$mean=
+na.omit(ts(c(NA,(rowSums(data))/length(f_prov)), start=c(end(y)[1],end(y)[2]), frequency=frequency(y)))
+  class(forecasts) <- "forecast"
+  return(forecasts)
 }
-
